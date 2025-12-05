@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>3D Page Flip – Apertura fluida / Chiusura rimbalzo</title>
+
+<style>
+html,body {
+  height:100%;
+  overflow: hidden;
+}
+body {
+  background: radial-gradient(#E4CEA6, #9C8763);
+  perspective: 900px;
+  margin: 0;
+}
+
+/* ===================== BOOK FLIP ===================== */
+#flip {
+  height: 350px;
+  width: 253px;
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(0deg);
+  transform-style: preserve-3d;
+  transform-origin: 0 0 0;
+}
+
+/* apertura liscia */
+#flip.animate {
+  animation: wrapperOpen 6s ease-in-out forwards;
+}
+/* chiusura con rimbalzo */
+#flip.reverse {
+  animation: wrapperClose 6s ease-in-out forwards;
+}
+
+/* Apertura: NO rimbalzo */
+@keyframes wrapperOpen {
+  0%   { transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(0deg); }
+  100% { transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(-180deg); }
+}
+
+/* Chiusura: CON rimbalzo */
+@keyframes wrapperClose {
+  0%   { transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(-180deg); }
+  60%  { transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(15deg); } /* rimbalzo */
+  80%  { transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(-5deg); }
+  100% { transform: translateZ(-10px) rotateX(60deg) rotateZ(29deg) rotateY(0deg); }
+}
+
+/* ===================== PAGINE ===================== */
+#flip div {
+  height: 350px;
+  width: 24px;
+  position: absolute;
+  left: calc(100% - 1px);
+  transform-origin: 0 100%;
+  transform-style: preserve-3d;
+  background-size: 253px 350px;
+}
+
+#flip #front, 
+#flip #front div {
+  background-image: url(http://blogs.slj.com/afuse8production/files/2012/06/Hobbit1.jpg);
+  box-shadow: inset rgba(255,255,255,0.3) 0px -1px 0 0,#35582C 0px 1px 0px 0px;
+}
+#flip #front > div > div > div > div > div > div > div > div > div > div { 
+  box-shadow: inset rgba(255,255,255,0.3) -1px -1px 0 0, #35582C 1px 1px 0px 0px;
+}
+#flip #back { transform: rotateY(.4deg); transform-origin: -100% 0; }
+#flip #back,
+#flip #back div {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/164210/map1_.jpg); 
+}
+
+#flip > div { left: 0; background-position-x: 0; }
+#flip div > div { background-position-x: -23px; animation: page 6s ease-in-out forwards; animation-play-state: paused; }
+#flip div > div > div { background-position-x : -46px; } 
+#flip div > div > div > div { background-position-x : -69px; }
+#flip div > div > div > div > div { background-position-x : -92px; }
+#flip div > div > div > div > div > div { background-position-x : -115px; }
+#flip div > div > div > div > div > div > div { background-position-x : -138px; }
+#flip div > div > div > div > div > div > div > div  { background-position-x : -161px; }
+#flip div > div > div > div > div > div > div > div > div { background-position-x : -184px; }
+#flip div > div > div > div > div > div > div > div > div > div { background-position-x : -207px; }
+#flip div > div > div > div > div > div > div > div > div > div > div { background-position-x : -229px; }
+
+@keyframes page {
+  15% { transform: rotateY(-10deg); }
+  50% { transform: rotateY(-2deg); }
+  65% { transform: rotateY(10deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+/* ===================== BOOK STRUCTURE ===================== */
+#book {
+  width: 248px;
+  height: 350px;
+  position: absolute;
+  left:50%;
+  top: 30%;
+  transform: translate3d(0px,0px,-10px) rotateX(60deg) rotateZ(29deg);
+  transform-style: preserve-3d;
+  -webkit-transform-origin: 0 0 0;
+}
+#book #top {
+  background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/164210/map2.jpg);
+  background-size: 100% 100%;
+  background-position: 100%;
+  box-shadow: inset rgba(0,0,0,0.2) 510px 0 50px -140px;
+  height: 350px;
+  width: 248px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: book 6s ease-in-out forwards;
+  animation-play-state: paused;
+}
+@keyframes book {
+  25% { box-shadow: inset rgba(0,0,0,.2) 0px 0 50px -140px; }
+  50% { box-shadow: inset rgba(0,0,0,.2) 0px 0 50px -140px; }
+  100% { box-shadow: inset rgba(0,0,0,.2) 510px 0 50px -140px; }
+}
+
+#book #bottom {
+  background: #E7DED1;
+  box-shadow: rgba(83, 53, 13, 0.2) 4px 2px 1px, #35582C 1px 1px 0px 0px;
+  height: 350px;
+  width: 253px;
+  position: absolute;
+  transform: translateZ(-40px);
+  left: 0;
+  top: 0;
+}
+
+#book #shadow {
+  animation: shadow 6s ease-in-out forwards;
+  animation-play-state: paused;
+  box-shadow: inset rgba(83, 53, 13, 0) -200px 0 150px -140px;
+  height: 350px;
+  width: 248px;
+  position: absolute;
+  left: -100%;
+  top: 0;
+  transform: translateZ(-40px);
+}
+@keyframes shadow {
+  20% { box-shadow: inset rgba(83, 53, 13, 0) -200px 0 150px -140px; }
+  50% { box-shadow: inset rgba(83, 53, 13, 0.3) -350px 0 150px -140px; }
+  60% { box-shadow: inset rgba(83, 53, 13, 0) -200px 0 150px -140px; }
+}
+
+#book #front {
+  background: -webkit-linear-gradient(top,#FCF6EA, #D8D1C3);
+  background-size: 100% 2px; 
+  box-shadow: inset #C2BBA2 3px 0 0px, #35582C -2px 1px 0px 0px;
+  height: 40px;
+  width: 251px;
+  left: -3px;
+  position: absolute;
+  bottom: -40px;
+  transform: rotateX(-90deg);
+  transform-origin: 50% 0;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+#book #right {
+  background: -webkit-linear-gradient(left,#DDD2BB, #BDB3A0);
+  background-size: 2px 100%; 
+  box-shadow: inset rgba(0,0,0,0) 0 0 0 20px;
+  height: 100%;
+  width: 40px;
+  position: absolute;
+  right: -40px;
+  top: 0;
+  transform: rotateY(90deg);
+  transform-origin: 0 50%;
+}
+
+/* ===================== BOOKMARK ===================== */
+#bookmark {
+  position: absolute;
+  transform: translate3d(20px,350px,-16px);
+  transform-style: preserve-3d;
+}
+#bookmark div {
+  background: rgb(151, 88, 88);
+  box-shadow: rgb(133,77,77) 1px 0;
+  height: 10px;
+  width: 20px;
+  position: absolute;
+  top: 9px;
+  transform: rotateX(-14deg);
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+}
+#bookmark > div > div {
+  background: linear-gradient(to bottom, rgb(151, 88, 88), rgb(189, 123, 123), rgb(151, 88, 88));
+}
+#bookmark > div > div > div {
+  background: linear-gradient(to bottom,rgb(151, 88, 88),rgb(133, 77, 77));
+}
+#bookmark > div > div > div > div {
+  background: none;
+  border-top: 0px solid transparent;
+  border-right: 10px solid rgb(133, 77, 77);
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid rgb(133, 77, 77);
+  height: 0;
+  width: 0;
+}
+#bookmark-shadow {
+  background: linear-gradient(to bottom,rgba(83, 53, 13, 0.25),rgba(83, 53, 13, 0.11));
+  height: 15px;
+  width: 20px;
+  position: absolute;
+  transform: translate3d(12px,350px,-25px) rotateX(-90deg) skewX(20deg);
+  transform-origin: 0 0;
+}
+
+/* ===================== TEXT & BUTTON ===================== */
+h4 {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  margin: 0;
+  font-weight: 200;
+  font-family: sans-serif;
+  color: rgba(0,0,0,0.3); 
+}
+button {
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #35582C;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .3s;
+}
+button:hover { background: #2C4A22; }
+</style>
+</head>
+<body>
+
+<div id="book">
+  <div id="top"></div>
+  <div id="front"></div>
+  <div id="right"></div>
+  <div id="bottom"></div>
+  <div id="shadow"></div>
+  <div id="bookmark">
+    <div><div><div><div></div></div></div></div>
+  </div>
+  <div id="bookmark-shadow"></div>
+</div>
+
+<div id="flip">
+  <div id="front">
+    <div><div><div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div>
+  </div>
+  <div id="back">
+    <div><div><div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div>
+  </div>
+</div>
+
+<button id="toggleBtn">Apri Libro</button>
+<h4>CSS 3D Bending Effect - Apertura fluida, chiusura rimbalzo</h4>
+
+<script>
+const flip = document.getElementById('flip');
+const bookTop = document.querySelector('#book #top');
+const shadow = document.querySelector('#book #shadow');
+const pages = document.querySelectorAll('#flip div > div');
+const btn = document.getElementById('toggleBtn');
+let open = false;
+
+btn.addEventListener('click', () => {
+  flip.classList.remove('animate', 'reverse');
+  void flip.offsetWidth; // forza reflow
+  if (!open) {
+    flip.classList.add('animate');
+    btn.textContent = "Chiudi Libro";
+  } else {
+    flip.classList.add('reverse');
+    btn.textContent = "Apri Libro";
+  }
+  open = !open;
+
+  // Attiva piegatura delle pagine e ombre solo quando si muove
+  const state = 'running';
+  [bookTop, shadow, ...pages].forEach(el => {
+    el.style.animationPlayState = state;
+    el.addEventListener('animationend', () => el.style.animationPlayState = 'paused', { once: true });
+  });
+});
+</script>
+
+</body>
+</html>

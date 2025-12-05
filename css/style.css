@@ -1,0 +1,21 @@
+.page {
+  background: #111827;
+  color: #f3f4f6;
+  max-width: 850px;      /* larghezza tipo pagina */
+  min-height: 1150px;    /* altezza simile A4 */
+  margin: 40px auto;
+  padding: 60px 70px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+.page h1,
+.page h2 {
+  text-align: center;
+}
+
+/* Per distanziare bene */
+.page + .page {
+  margin-top: 80px;
+}

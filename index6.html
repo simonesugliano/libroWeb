@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Libro 3D Sfogliabile - Base</title>
+  <style>
+    :root {
+      --book-width: 320px;
+      --book-height: 220px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #f5f5f5 0, #d0d0d0 60%, #b0b0b0 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #333;
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .controls button {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid #444;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+
+    .controls button:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    .controls button:active {
+      transform: translateY(1px);
+    }
+
+    /* SCENA 3D */
+    .scene {
+      width: 480px;
+      height: 340px;
+      position: relative;
+      perspective: 1400px;
+    }
+
+    .stand {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      width: 360px;
+      height: 12px;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #777, #999, #777);
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+
+    .stand::before {
+      /* piano del leggio */
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      width: 360px;
+      height: 8px;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #6b4a32, #8a5c3b);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    /* LIBRO 3D */
+    .book-wrapper {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      transform-style: preserve-3d;
+      /* Inclinazione tipo leggio */
+      transform-origin: center bottom;
+      transform:
+        translateX(-50%)
+        rotateX(45deg)
+        rotateY(-25deg);
+    }
+
+    /* Hack: racchiudo il libro in un container dedicato per applicare bene la trasformazione */
+    .book {
+      position: relative;
+      width: var(--book-width);
+      height: var(--book-height);
+      transform-style: preserve-3d;
+    }
+
+    /* Ombra sul “tavolo” */
+    .book-shadow {
+      position: absolute;
+      width: 260px;
+      height: 70px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0, rgba(0,0,0,0) 70%);
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%) rotateX(90deg);
+      transform-origin: center;
+      pointer-events: none;
+      filter: blur(1px);
+    }
+
+    /* Pagina base */
+    .page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      box-shadow: 0 0 6px rgba(0,0,0,0.25);
+      border-radius: 4px;
+      padding: 20px;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+
+      /* Profondità individuale */
+      transform: translateZ(var(--z, 0px));
+    }
+
+    /* Bordo che simula lo spessore laterale del libro */
+    .page::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      right: -6px;
+      width: 6px;
+      height: calc(100% - 8px);
+      border-radius: 0 4px 4px 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        #f5f5f5 0,
+        #e0e0e0 1px,
+        #ffffff 2px
+      );
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .page-cover {
+      background: linear-gradient(135deg, #8b2b2b, #c14646);
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 0 16px rgba(0,0,0,0.5);
+    }
+
+    .page-cover h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .page-cover p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .page-content h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+      color: #222;
+    }
+
+    .page-content p {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #444;
+    }
+
+    /* Stato “sfogliata” */
+    .page.turned {
+      transform:
+        translateZ(var(--z, 0px))
+        rotateY(-180deg);
+    }
+
+    /* Retro semplificato della copertina */
+    .page-back {
+      background: #f5f0e8;
+      color: #444;
+      font-size: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.45);
+    }
+
+    .page-back::after {
+      /* bordino retro */
+      background: repeating-linear-gradient(
+        to bottom,
+        #f0e6d8 0,
+        #e2d3c0 1px,
+        #f8f0e4 2px
+      );
+    }
+
+    /* piccolo badge pagina */
+    .page-number {
+      position: absolute;
+      bottom: 10px;
+      right: 16px;
+      font-size: 11px;
+      color: #999;
+    }
+
+    .info {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #555;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Libro 3D – Base sfogliabile</h1>
+
+  <div class="scene">
+    <!-- Sostegno tipo leggio -->
+    <div class="stand"></div>
+
+    <!-- Wrapper inclinato -->
+    <div class="book-wrapper">
+      <div class="book">
+        <!-- Ombra sul “piano” -->
+        <div class="book-shadow"></div>
+
+        <!-- COPERTINA (pagina 0) -->
+        <section class="page page-cover" data-index="0" style="--z: 0px;">
+          <h2>Titolo del Libro</h2>
+          <p>Sottotitolo o nome dell'autore.</p>
+          <p style="margin-top: 18px; font-size: 12px; opacity: 0.85;">
+            Questa è solo una base: qui puoi mettere un’immagine di copertina,
+            un logo, quello che vuoi.
+          </p>
+          <span class="page-number">Copertina</span>
+        </section>
+
+        <!-- PAGINA 1 -->
+        <section class="page page-content" data-index="1" style="--z: -3px;">
+          <h3>Capitolo 1</h3>
+          <p>
+            Questo è un esempio di testo sulla prima pagina interna.
+            Puoi sostituirlo con contenuti reali, immagini, ecc.
+          </p>
+          <span class="page-number">1</span>
+        </section>
+
+        <!-- PAGINA 2 -->
+        <section class="page page-content" data-index="2" style="--z: -6px;">
+          <h3>Capitolo 2</h3>
+          <p>
+            Ogni pagina viene leggermente traslata lungo l'asse Z, così
+            si percepisce lo spessore del blocco di fogli.
+          </p>
+          <span class="page-number">2</span>
+        </section>
+
+        <!-- PAGINA 3 -->
+        <section class="page page-content" data-index="3" style="--z: -9px;">
+          <h3>Capitolo 3</h3>
+          <p>
+            Puoi aumentare il numero di pagine duplicando questi blocchi
+            e cambiando <code>data-index</code> e <code>--z</code>.
+          </p>
+          <span class="page-number">3</span>
+        </section>
+
+        <!-- RETRO COPERTINA (ultima) -->
+        <section class="page page-back" data-index="4" style="--z: -12px;">
+          <p>
+            Retro copertina: qui puoi aggiungere un breve testo, crediti, link, ecc.
+          </p>
+          <span class="page-number">Retro</span>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev-btn">Pagina precedente</button>
+    <button id="next-btn">Pagina successiva</button>
+  </div>
+
+  <p class="info">
+    Suggerimento: per cambiare l’inclinazione, modifica
+    <code>rotateX(45deg)</code> e <code>rotateY(-25deg)</code> nel CSS di
+    <code>.book-wrapper</code>.
+  </p>
+
+  <script>
+    const pages = Array.from(document.querySelectorAll('.page'));
+    let current = 0; // indice della pagina "aperta" sul fronte
+
+    function updatePages() {
+      pages.forEach((page, index) => {
+        if (index <= current) {
+          page.classList.add('turned');
+        } else {
+          page.classList.remove('turned');
+        }
+      });
+    }
+
+    function nextPage() {
+      if (current < pages.length - 1) {
+        current++;
+        updatePages();
+      }
+    }
+
+    function prevPage() {
+      if (current > 0) {
+        current--;
+        updatePages();
+      }
+    }
+
+    document.getElementById('next-btn').addEventListener('click', nextPage);
+    document.getElementById('prev-btn').addEventListener('click', prevPage);
+
+    // inizialmente tutte le pagine non girate (libro chiuso)
+    updatePages();
+  </script>
+</body>
+</html>

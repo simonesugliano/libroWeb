@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Libro Sfogliabile Realistico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f3ebdb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+    }
+
+    .controls {
+      margin-bottom: 24px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .controls button {
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      background: #b0772f;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,.25);
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+
+    .controls button:disabled {
+      opacity: .4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .controls button:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,.3);
+    }
+
+    .book-scene {
+      width: 780px;
+      max-width: 100%;
+      display: flex;
+      justify-content: center;
+      perspective: 2200px;
+    }
+
+    .book-wrapper {
+      width: 100%;
+      max-width: 780px;
+    }
+
+    .book {
+      position: relative;
+      width: 100%;
+      padding-top: 60%;
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      transform: scaleX(.5);
+      transition: transform 0.9s cubic-bezier(.23,.85,.23,1);
+    }
+
+    .book.open {
+      transform: scaleX(1);
+    }
+
+    .book.reclosing {
+      transform: scaleX(.5);
+    }
+
+    .book-shell {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      transform-style: preserve-3d;
+    }
+
+    .shadow-base {
+      position: absolute;
+      inset: 2%;
+      border-radius: 10px;
+      box-shadow:
+        0 28px 50px rgba(0,0,0,.45),
+        0 0 0 1px rgba(0,0,0,.35);
+      background: radial-gradient(circle at 25% 20%, #fbe5be 0, #e2b777 40%, #895528 100%);
+    }
+
+    .spine-highlight {
+      position: absolute;
+      top: 5%;
+      bottom: 5%;
+      left: 49%;
+      width: 2%;
+      background: linear-gradient(to right,
+        rgba(0,0,0,.22),
+        rgba(255,255,255,.5),
+        rgba(0,0,0,.22)
+      );
+      opacity: .7;
+      pointer-events: none;
+    }
+
+    .cover-front,
+    .cover-back {
+      position: absolute;
+      inset: 4%;
+      border-radius: 8px;
+      background: radial-gradient(circle at 20% 20%, #fbe3b8 0, #e0b16d 40%, #7a4b21 100%);
+      border: 2px solid rgba(58,34,13,.85);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,.7),
+        0 0 0 1px rgba(255,255,255,.2);
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .cover-front {
+      transform-origin: left center;
+      transform: rotateY(0deg);
+      z-index: 8;
+      transition: transform 0.9s cubic-bezier(.23,.85,.23,1);
+    }
+
+    .book.open .cover-front {
+      transform: rotateY(-185deg);
+    }
+
+    .book.reclosing .cover-front {
+      transform: rotateY(0deg);
+    }
+
+    .cover-front::after {
+      content: "";
+      position: absolute;
+      inset: 9%;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,.35);
+      box-shadow:
+        0 0 10px rgba(0,0,0,.35),
+        inset 0 0 12px rgba(0,0,0,.4);
+    }
+
+    .cover-back {
+      transform: rotateY(180deg);
+      transform-origin: right center;
+      z-index: 1;
+    }
+
+    .back-message {
+      position: absolute;
+      inset: 15%;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      color: #fdeccd;
+      text-shadow: 0 2px 4px rgba(0,0,0,.9);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .back-message h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .25em;
+      opacity: .85;
+      margin-bottom: 8px;
+    }
+
+    .closed-only {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+
+    .book.closed.show-back .closed-only {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .page-stack {
+      position: absolute;
+      inset: 5.5% 4.5%;
+      border-radius: 7px;
+      background: linear-gradient(to right, #f0dfc1 0, #f6e9cf 10%, #f6e9cf 90%, #f0dfc1 100%);
+      box-shadow:
+        inset 0 0 10px rgba(0,0,0,.35),
+        0 0 0 1px rgba(0,0,0,.25);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      opacity: 0;
+      transform-style: preserve-3d;
+      transition: opacity 0.45s ease 0.45s;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .book.open .page-stack {
+      opacity: 1;
+    }
+
+    .book.reclosing .page-stack {
+      opacity: 0;
+      transition-delay: 0s;
+    }
+
+    .page {
+      width: 50%;
+      padding: 30px 26px;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .page-left {
+      border-right: 1px solid rgba(0,0,0,.08);
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.13),
+        rgba(255,255,255,.13) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    }
+
+    .page-right {
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.13),
+        rgba(255,255,255,.13) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    }
+
+    .page-content {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #4f381c;
+      text-shadow: 0 1px 0 rgba(255,255,255,.4);
+    }
+
+    .page-title {
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #7b5527;
+    }
+
+    .page-sub {
+      font-size: 12px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      color: rgba(0,0,0,.4);
+    }
+
+    .page-illustration {
+      margin-top: 18px;
+      height: 80px;
+      border-radius: 4px;
+      border: 1px dashed rgba(0,0,0,.18);
+      background: repeating-linear-gradient(
+        135deg,
+        rgba(139,98,46,.1),
+        rgba(139,98,46,.1) 6px,
+        rgba(248,232,205,.8) 6px,
+        rgba(248,232,205,.8) 12px
+      );
+    }
+
+    .edge-stack-right,
+    .edge-stack-left {
+      position: absolute;
+      top: 5.5%;
+      bottom: 5.5%;
+      width: 18px;
+      border-radius: 4px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #e7d3af 0,
+        #f5e5c5 2px,
+        #e7d3af 4px
+      );
+      box-shadow: inset 0 0 4px rgba(0,0,0,.3);
+      opacity: .9;
+      z-index: 2;
+    }
+
+    .edge-stack-right {
+      right: 4%;
+    }
+
+    .edge-stack-left {
+      left: 4%;
+    }
+
+    .page-flip {
+      position: absolute;
+      top: 5.5%;
+      bottom: 5.5%;
+      right: 4.5%;
+      width: 50%;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      display: none;
+      z-index: 6;
+    }
+
+    .page-flip-surface {
+      position: absolute;
+      inset: 0;
+      border-radius: 0 7px 7px 0;
+      background: linear-gradient(to right, #f7ead0 0, #efddbf 100%);
+      box-shadow:
+        0 14px 30px rgba(0,0,0,.5),
+        0 0 0 1px rgba(0,0,0,.25);
+      overflow: hidden;
+    }
+
+    .page-flip-paper {
+      position: absolute;
+      inset: 0;
+      padding: 30px 26px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #4f381c;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.13),
+        rgba(255,255,255,.13) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      text-shadow: 0 1px 0 rgba(255,255,255,.4);
+    }
+
+    .page-flip-gradient-front,
+    .page-flip-gradient-back {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      opacity: .9;
+    }
+
+    .page-flip-gradient-front {
+      background: linear-gradient(to left,
+        rgba(0,0,0,.55),
+        rgba(0,0,0,.2),
+        transparent 55%
+      );
+    }
+
+    .page-flip-gradient-back {
+      background: radial-gradient(circle at 0 50%,
+        rgba(255,255,255,.9),
+        rgba(0,0,0,.12) 55%,
+        rgba(0,0,0,.4) 80%
+      );
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+    }
+
+    .page-flip.forward {
+      display: block;
+      animation: flipForward 0.95s cubic-bezier(.4,.15,.25,1) forwards;
+    }
+
+    .page-flip.backward {
+      display: block;
+      animation: flipBackward 0.95s cubic-bezier(.4,.15,.25,1) forwards;
+    }
+
+    @keyframes flipForward {
+      0% {
+        transform: rotateY(0deg) translateZ(1px);
+      }
+      40% {
+        transform: rotateY(-80deg) translateZ(30px);
+      }
+      70% {
+        transform: rotateY(-140deg) translateZ(12px);
+      }
+      100% {
+        transform: rotateY(-180deg) translateZ(0);
+      }
+    }
+
+    @keyframes flipBackward {
+      0% {
+        transform: rotateY(-180deg) translateZ(0);
+      }
+      30% {
+        transform: rotateY(-140deg) translateZ(12px);
+      }
+      60% {
+        transform: rotateY(-80deg) translateZ(30px);
+      }
+      100% {
+        transform: rotateY(0deg) translateZ(1px);
+      }
+    }
+
+    @media (max-width: 800px) {
+      .book-scene {
+        width: 100%;
+      }
+      .page {
+        padding: 24px 18px;
+      }
+      .page-flip-paper {
+        padding: 24px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="controls">
+    <button id="openBookBtn">Apri il libro</button>
+    <button id="prevPageBtn" disabled>Indietro</button>
+    <button id="nextPageBtn" disabled>Avanti</button>
+  </div>
+
+  <div class="book-scene">
+    <div class="book-wrapper">
+      <div id="book" class="book closed">
+        <div class="book-shell">
+          <div class="shadow-base"></div>
+          <div class="spine-highlight"></div>
+
+          <div class="edge-stack-left"></div>
+          <div class="edge-stack-right"></div>
+
+          <div class="page-stack">
+            <div class="page page-left">
+              <div class="page-content">
+                <div class="page-sub" id="leftSub"></div>
+                <div class="page-title" id="leftTitle"></div>
+                <div id="leftBody"></div>
+                <div class="page-illustration" id="leftIllustration"></div>
+              </div>
+            </div>
+            <div class="page page-right">
+              <div class="page-content">
+                <div class="page-sub" id="rightSub"></div>
+                <div class="page-title" id="rightTitle"></div>
+                <div id="rightBody"></div>
+                <div class="page-illustration" id="rightIllustration"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cover-front"></div>
+
+          <div class="cover-back closed-only">
+            <div class="back-message">
+              <h3>Fine</h3>
+              <div>Grazie per aver sfogliato questo libro.</div>
+            </div>
+          </div>
+
+          <div id="pageFlip" class="page-flip">
+            <div class="page-flip-surface">
+              <div class="page-flip-paper" id="flipInner"></div>
+              <div class="page-flip-gradient-front"></div>
+              <div class="page-flip-gradient-back"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const spreads = [
+      {
+        left: {
+          sub: "Dedica",
+          title: "Alla Persona Speciale",
+          body: "Qui puoi inserire una dedica personale, un ricordo o una frase significativa. Questa è la prima pagina del libro, quella che apre la storia.",
+          illustration: true
+        },
+        right: {
+          sub: "Capitolo 1",
+          title: "Come Tutto È Iniziato",
+          body: "In questa pagina puoi raccontare un momento importante, mostrare una foto, descrivere un inizio. Ogni sezione potrà essere personalizzata nei dettagli.",
+          illustration: true
+        }
+      },
+      {
+        left: {
+          sub: "Ricordi",
+          title: "Momenti Indimenticabili",
+          body: "Testo segnaposto: qui potrai inserire fotografie, eventi, frasi che raccontano il vostro viaggio insieme.",
+          illustration: true
+        },
+        right: {
+          sub: "Dettagli",
+          title: "Piccole Cose Preziose",
+          body: "Puoi usare questa pagina per riportare piccoli dettagli, aneddoti, appunti, disegni o altre immagini speciali.",
+          illustration: true
+        }
+      },
+      {
+        left: {
+          sub: "Oggi",
+          title: "Il Presente",
+          body: "Una pagina dedicata a ciò che siete ora: desideri, sogni, progetti in corso. Qui il libro racconta il vostro tempo presente.",
+          illustration: true
+        },
+        right: {
+          sub: "Domani",
+          title: "Il Futuro",
+          body: "Qui puoi scrivere speranze, promesse, oppure lasciare spazio bianco per essere riempito in futuro con nuovi ricordi.",
+          illustration: true
+        }
+      }
+    ];
+
+    const bookEl = document.getElementById("book");
+    const openBtn = document.getElementById("openBookBtn");
+    const prevBtn = document.getElementById("prevPageBtn");
+    const nextBtn = document.getElementById("nextPageBtn");
+
+    const leftSub = document.getElementById("leftSub");
+    const leftTitle = document.getElementById("leftTitle");
+    const leftBody = document.getElementById("leftBody");
+    const leftIllustration = document.getElementById("leftIllustration");
+
+    const rightSub = document.getElementById("rightSub");
+    const rightTitle = document.getElementById("rightTitle");
+    const rightBody = document.getElementById("rightBody");
+    const rightIllustration = document.getElementById("rightIllustration");
+
+    const pageFlip = document.getElementById("pageFlip");
+    const flipInner = document.getElementById("flipInner");
+
+    let currentSpread = 0;
+    let isOpen = false;
+    let isAnimating = false;
+    let turnDirection = null;
+
+    function renderSpread(index) {
+      const spread = spreads[index];
+
+      leftSub.textContent = spread.left.sub || "";
+      leftTitle.textContent = spread.left.title || "";
+      leftBody.textContent = spread.left.body || "";
+      leftIllustration.style.display = spread.left.illustration ? "block" : "none";
+
+      rightSub.textContent = spread.right.sub || "";
+      rightTitle.textContent = spread.right.title || "";
+      rightBody.textContent = spread.right.body || "";
+      rightIllustration.style.display = spread.right.illustration ? "block" : "none";
+    }
+
+    function updateControls() {
+      openBtn.disabled = isOpen || isAnimating;
+      prevBtn.disabled = !isOpen || isAnimating || currentSpread === 0;
+      nextBtn.disabled = !isOpen || isAnimating;
+    }
+
+    function openBook() {
+      if (isOpen || isAnimating) return;
+      isAnimating = true;
+      bookEl.classList.remove("closed", "show-back", "reclosing");
+      bookEl.classList.add("open");
+      currentSpread = 0;
+      renderSpread(currentSpread);
+      setTimeout(() => {
+        isOpen = true;
+        isAnimating = false;
+        updateControls();
+      }, 950);
+    }
+
+    function closeBookToBack() {
+      if (!isOpen) return;
+      isAnimating = true;
+      isOpen = false;
+      bookEl.classList.remove("open");
+      bookEl.classList.add("reclosing");
+      setTimeout(() => {
+        bookEl.classList.remove("reclosing");
+        bookEl.classList.add("closed", "show-back");
+        currentSpread = 0;
+        isAnimating = false;
+        updateControls();
+      }, 950);
+    }
+
+    function prepareFlip(direction) {
+      const fromSpread = spreads[currentSpread];
+
+      if (direction === "forward") {
+        flipInner.textContent = fromSpread.right.body || "";
+      } else {
+        const prevSpread = spreads[currentSpread - 1];
+        flipInner.textContent = prevSpread ? (prevSpread.right.body || "") : "";
+      }
+
+      pageFlip.classList.remove("forward", "backward");
+      void pageFlip.offsetWidth;
+      pageFlip.classList.add(direction === "forward" ? "forward" : "backward");
+    }
+
+    pageFlip.addEventListener("animationend", () => {
+      pageFlip.classList.remove("forward", "backward");
+      pageFlip.style.display = "none";
+
+      if (turnDirection === "forward") {
+        currentSpread++;
+      } else if (turnDirection === "backward") {
+        currentSpread--;
+      }
+
+      renderSpread(currentSpread);
+      isAnimating = false;
+      turnDirection = null;
+      updateControls();
+    });
+
+    openBtn.addEventListener("click", () => {
+      openBook();
+      updateControls();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!isOpen || isAnimating) return;
+
+      if (currentSpread < spreads.length - 1) {
+        isAnimating = true;
+        turnDirection = "forward";
+        pageFlip.style.display = "block";
+        prepareFlip("forward");
+        updateControls();
+      } else {
+        isAnimating = true;
+        updateControls();
+        closeBookToBack();
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (!isOpen || isAnimating) return;
+      if (currentSpread === 0) return;
+
+      isAnimating = true;
+      turnDirection = "backward";
+      pageFlip.style.display = "block";
+      prepareFlip("backward");
+      updateControls();
+    });
+
+    updateControls();
+  </script>
+</body>
+</html>
+

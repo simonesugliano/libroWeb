@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Album dei Ricordi – WOW Hybrid 6.0 (3D Enhanced)</title>
+<link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&display=swap" rel="stylesheet">
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/blasten/turn.js/turn.min.js"></script>
+
+<style>
+/* ================================================
+   VIEWPORT FIX – MOBILE NON SI DEFORMA PIÙ
+=================================================== */
+html, body {
+  margin: 0;
+  padding: 0px;
+  width: 100vw;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+
+  /* sfondo con immagine + velatura trasparente */
+  background: 
+    url("assets/lanterna.jpg") no-repeat center center fixed;
+  background-size: cover;
+
+  font-family: "Georgia", serif;
+  position: fixed;
+  inset: 0;
+}
+/* Bagliore dinamico caldo (respiro della lanterna) */
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 60%,
+    rgba(255, 200, 120, 0.20),
+    rgba(255, 160, 70, 0.05),
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  animation: warmPulse 8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(35px);
+}
+
+@keyframes warmPulse {
+  0% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.04); }
+  100% { opacity: 0.5; transform: scale(1.02); }
+}
+
+/* Evita glitch su Safari iOS */
+body {
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+
+/* ================================================ */
+#start-screen {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  z-index:3000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+}
+
+#start-screen button,
+.controls button {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 38px;
+  font-weight: 600;
+  color: #f3e9cd;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-shadow: 
+    0px 0px 4px rgba(0,0,0,0.6),
+    0px 0px 12px rgba(255, 220, 150, 0.4);
+  transition: 0.4s ease;
+  padding: 0;
+}
+
+#start-screen button:hover,
+.controls button:hover {
+  color:#fff;
+  text-shadow:
+    0px 0px 6px rgba(255,255,255,0.8),
+    0px 0px 12px rgba(255,220,150,0.7);
+  transform:scale(1.05);
+}
+
+#start-screen button:active,
+.controls button:active {
+  transform:scale(0.95);
+}
+
+.scene,
+.controls {
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .9s ease;
+}
+
+.controls {
+  position:absolute;
+  bottom:35px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:25px;
+  z-index:2500;
+}
+
+.controls button {
+  background: transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  font-family:"Cormorant Garamond", serif;
+  font-size:32px;
+  font-weight:600;
+  color:#f3e9cd;
+  cursor:pointer;
+  text-shadow:
+    0px 0px 4px rgba(0,0,0,0.6),
+    0px 0px 10px rgba(255,220,150,0.3);
+  transition:0.3s ease;
+}
+.controls button:hover {
+  color:#fff;
+  text-shadow:
+    0px 0px 6px rgba(255,255,255,0.8),
+    0px 0px 12px rgba(255,220,150,0.7);
+  transform:scale(1.05);
+}
+.controls button:active {
+  transform:scale(0.92);
+}
+
+/* ================================================
+   SCENA
+=================================================== */
+.scene {
+  position:absolute;
+  top:50%;
+  left:50%;
+transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
+  transform-style:preserve-3d;
+  perspective:2400px;
+  filter:drop-shadow(0 35px 60px rgba(0,0,0,0.6));
+  z-index:2000;
+  will-change:transform;
+  filter: drop-shadow(0 80px 120px rgba(0,0,0,0.7));
+}
+
+/* LUCE DIETRO */
+.back-glow {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  width:140%;
+  height:140%;
+  background:radial-gradient(circle, rgba(255,220,150,0.7) 0%, rgba(255,200,120,0.25) 40%, transparent 75%);
+  filter:blur(60px);
+  opacity:0;
+  pointer-events:none;
+  z-index:-1;
+  transition:opacity 1.4s ease;
+}
+.back-glow.active { opacity:1; }
+
+/* FUMO */
+.magic-smoke {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  width:160%;
+  height:160%;
+  background:url("https://i.imgur.com/4ZQZy5V.png");
+  background-size:cover;
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  filter:blur(6px);
+}
+@keyframes smokeFade {
+  0% { opacity:0; transform:translate(-50%, -50%) scale(0.7); }
+  30% { opacity:0.45; }
+  70% { opacity:0.28; transform:translate(-50%, -50%) scale(1.15); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.35); }
+}
+
+/* ================================================
+   LIBRO
+=================================================== */
+.wrapper {
+  position:relative;
+  width:72vw;
+  height:calc(72vw * 2.0);
+  max-height:80vh;
+  background:transparent;
+  z-index:10;
+  will-change:transform;
+  overflow:visible !important;
+}
+
+
+/* OMBRA PROFONDA ESTERNA SUL LATO SINISTRO */
+
+#album {
+  width:100%;
+  height:100%;
+  border-radius:1vw;
+  background:transparent;
+  overflow:visible !important;
+}
+
+#album .page {
+  background-color:#f7e9d0;
+  background-image:url('https://i.imgur.com/vd6JcMu.jpg');
+  background-size:cover;
+  background-position:center;
+  border-radius:1vw;
+  box-shadow:
+    inset 0 0 25px rgba(0,0,0,0.2),
+    inset 10px 0 20px rgba(0,0,0,0.1);
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+}
+
+/* COPERTINA */
+.cover {
+  background-image:url("assets/copertina.png") !important;
+  background-size:cover !important;
+  background-position:center !important;
+  background-color:transparent !important;
+}
+.cover h1 {
+  color:#f2e1c2;
+  font-size:2.5em !important;
+  text-shadow:1px 1px 3px rgba(0,0,0,0.6);
+  text-align:center;
+  margin-top:40%;
+}
+.page.cover .page-content {
+  transform-origin:left center;
+}
+@keyframes coverOpen {
+  0% { transform:rotateY(0deg); }
+  100% { transform:rotateY(-18deg); }
+}
+
+/* MATERIALIZZAZIONE */
+@keyframes materializeBook {
+  0% { opacity:0; transform:translate(-50%, -50%) rotateX(35deg) scale(0.15); filter:blur(20px) brightness(0.6); }
+  40% { opacity:0.6; filter:blur(10px) brightness(0.85); transform:translate(-50%, -50%) rotateX(35deg) scale(0.5); }
+  80% { opacity:1; filter:blur(3px); transform:translate(-50%, -50%) rotateX(35deg) scale(0.98); }
+  100%{ opacity:1; filter:blur(0); transform:translate(-50%, -50%) rotateX(35deg) scale(1); }
+}
+.scene.animate-book { animation: materializeBook 1.6s ease-out forwards; }
+/* OMBRA SULLA COPERTINA – ATTACCATA 1:1 AL LIBRO */
+.page.cover::before {
+  content: "";
+  position: absolute;
+  left: -35px;      /* distanza regolabile */
+  top: 0;
+  width: 58px;      /* larghezza ombra */
+  height: 100%;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to left,
+    rgba(0,0,0,0.85) 0%,
+    rgba(0,0,0,0.55) 40%,
+    rgba(0,0,0,0.30) 70%,
+    transparent 100%
+  );
+
+  filter: blur(14px);
+}
+
+.page-content {
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.page-content img {
+  width:100%;
+  border-radius:10px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* COSTA FUMOSA A TUTTA ALTEZZA + SOPRA + SOTTO */
+.album-spine0,
+.album-spine1,
+.album-spine2,
+.album-spine3,
+.album-spine4,
+.album-spine5,
+.album-spine6,
+.album-spine7,
+.album-spine8,
+.album-spine9 {
+  position: absolute;
+  left: 50%;
+  
+  /* Copre più del libro */
+  top: -10px;          /* <— estende l’ombra SOPRA */
+  height: calc(100% + 40px) !important; /* <— estende l’ombra SOTTO */
+
+  border-radius: 6px;
+
+  background: radial-gradient(
+    circle at left,
+    rgba(0,0,0,0.70) 0%, 
+    rgba(0,0,0,0.50) 35%,
+    rgba(0,0,0,0.25) 70%,
+    transparent 100%
+  );
+
+  filter: blur(8px);
+  opacity: 0.9;
+  mix-blend-mode: multiply;
+  z-index: -1;
+}
+
+/* LARGHEZZA SPINE + PROFONDITÀ */
+.album-spine0 { width:  8px;  transform: translateX(-50%) translateZ(-1px); }
+.album-spine1 { width: 10px;  transform: translateX(-50%) translateZ(-2px); }
+.album-spine2 { width: 12px;  transform: translateX(-50%) translateZ(-3px); }
+.album-spine3 { width: 14px;  transform: translateX(-50%) translateZ(-4px); }
+.album-spine4 { width: 16px;  transform: translateX(-50%) translateZ(-5px); }
+.album-spine5 { width: 18px;  transform: translateX(-50%) translateZ(-6px); }
+.album-spine6 { width: 20px;  transform: translateX(-50%) translateZ(-7px); }
+.album-spine7 { width: 22px;  transform: translateX(-50%) translateZ(-8px); }
+.album-spine8 { width: 24px;  transform: translateX(-50%) translateZ(-9px); }
+.album-spine9 { width: 26px;  transform: translateX(-50%) translateZ(-10px); }
+
+
+
+/* PAGINE IN MOVIMENTO – effetto sollevamento */
+#album .page.is-turning {
+  transform-origin:left center;
+  transform:rotateY(-15deg) translateY(-10px) translateZ(8px) rotateX(3deg);
+  box-shadow:
+    0 25px 45px rgba(0,0,0,0.35),
+    inset 0 0 25px rgba(0,0,0,0.15);
+  transition:transform 0.4s ease-out, box-shadow 0.3s ease-out;
+}
+/* =========================================================
+   SIMULAZIONE PAGINE BIANCHE (TAGLIO FOGLI)
+========================================================= */
+
+.book-pages {
+  position: absolute;
+  bottom: -10px;
+  left: calc(73% + 16px);
+  transform: translateX(-50%) translateZ(-12px);
+  width: 49%;
+  height: 18px;
+
+  /* SFUMATURA CHIARA CENTRALE PIÙ SCURA */
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(185, 162, 114, 0.35) 15%,
+    rgba(187, 156, 84, 0.95) 50%,
+    rgba(185, 162, 114, 0.35) 85%,
+    transparent 20%
+  );
+
+  /* PROFONDITÀ DELLE PAGINE (più contrasto) */
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.25) 0%,
+      rgba(255,255,255,0.15) 30%,
+      rgba(0,0,0,0.25) 80%,
+      rgba(0,0,0,0.35) 100%
+    ),
+    linear-gradient(
+      to right,
+      rgba(230, 215, 180, 0.95) 50%,
+      transparent 100%
+    );
+
+  /* BLUR RIDOTTO → Più definita e visibile */
+  filter: blur(6px);
+
+  /* RILIEVO PIÙ FORTE */
+  box-shadow:
+    inset 0 -6px 10px rgba(0,0,0,0.35),
+    inset 0 3px 4px rgba(255,255,255,0.25),
+    0 4px 8px rgba(0,0,0,0.45);
+
+  border-radius: 0 0 8px 0;
+  z-index: -1;
+
+  /* Sfumatura laterale più stretta (più visibile al centro) */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+
+.cover h1,
+#start-screen button,
+.controls button {
+  font-family: "Tangerine", "Cinzel Decorative", serif;
+  font-size: 3.4em;
+  letter-spacing: 2px;
+  color: #f8f0d0;
+  text-shadow:
+    0 0 10px rgba(255, 225, 180, 0.6),
+    0 0 20px rgba(255, 190, 90, 0.4);
+}
+
+/* Pulsanti leggermente più piccoli */
+#start-screen button,
+.controls button {
+  font-size: 46px;
+  transition: all 0.4s ease;
+}
+
+#start-screen button:hover,
+.controls button:hover {
+  color: #fff9e8;
+  text-shadow:
+    0 0 10px rgba(255, 230, 180, 0.9),
+    0 0 24px rgba(255, 200, 120, 0.6);
+  transform: scale(1.05);
+}
+/* ✨ MATERIALIZZAZIONE EPICA DEL LIBRO ✨ */
+@keyframes materializeEpic {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.15) rotateX(55deg);
+    filter: blur(25px) brightness(0.6);
+  }
+  12% {
+    opacity: 0.25;
+    transform: translate(-50%, -50%) scale(0.22) rotateX(50deg);
+    filter: blur(18px);
+  }
+  25% {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.35) rotateX(46deg);
+    filter: blur(12px);
+  }
+  45% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(0.65) rotateX(43deg);
+    filter: blur(6px);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.92) rotateX(41deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateX(40deg);
+    filter: blur(0px) brightness(1);
+  }
+}
+
+.scene.materialize-epic {
+  animation: materializeEpic 2.8s cubic-bezier(0.22, 0.65, 0.16, 1) forwards;
+}
+.story-wrapper {
+  width: 95%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.story-photo {
+  width: 90%;
+  height: 50%;          /* metà pagina */
+  object-fit: cover;    /* riempie in modo elegante */
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+.page-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column; /* elementi dall’alto verso il basso */
+  align-items: center;    /* centrati orizzontalmente */
+  justify-content: flex-start; /* 🔥 parte sempre dall’alto */
+  padding-top: 20px;      /* un filo di margine estetico */
+  box-sizing: border-box;
+}
+
+
+
+.story-title {
+  font-family: "Tangerine", serif;
+  font-size: 1.5em;
+  color: #5a3d1e;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  margin: 0;
+}
+
+.story-text {
+  font-size: 0.8em;
+  line-height: 1.15em;
+  color: #3c2a15;
+  width: 85%;
+  font-family: "Georgia", serif;
+}
+
+@media (max-width: 768px) {
+
+  /* ZOOM del libro su mobile */
+  .scene {
+    transform: translate(-50%, -50%) rotateX(40deg) scale(1.3) !important;
+  }
+
+  /* opzionale: abbasso un filo i pulsanti se servono */
+  .controls {
+    bottom: 15px;
+  }
+.cover h1 {
+  color:#f2e1c2;
+  font-size:1.5em !important;
+  text-shadow:1px 1px 3px rgba(0,0,0,0.6);
+  text-align:center;
+  margin-top:40%;
+}
+}
+@media (orientation: landscape) and (max-width: 900px) {
+  
+  /* Riduci lo zoom del libro */
+  .scene {
+    transform: translate(-50%, -50%) rotateX(35deg) scale(1.0) !important;
+  }
+
+  /* Aggiungi padding laterale */
+  body {
+    padding: 10px 30px 80px;
+    box-sizing: border-box;
+  }
+
+  /* Rendi la wrapper più bassa per non uscire */
+  .wrapper {
+    height: calc(72vw * 1.3); /* più bassa del verticale */
+    max-height: 70vh;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+  <button id="open-album">Vedi i Ricordi</button>
+</div>
+
+<div class="controls">
+  <button id="prev">Indietro</button>
+  <button id="next">Avanti</button>
+</div>
+
+<div class="scene">
+  <div class="back-glow"></div>
+  <div class="magic-smoke"></div>
+
+  <div class="wrapper">
+<div class="album-spine0"></div>
+<div class="album-spine1"></div>
+<div class="album-spine2"></div>
+<div class="album-spine3"></div>
+<div class="album-spine4"></div>
+<div class="album-spine5"></div>
+<div class="album-spine6"></div>
+<div class="album-spine7"></div>
+<div class="album-spine8"></div>
+<div class="album-spine9"></div>
+<div class="book-pages"></div>
+
+    <div id="album">
+      <div class="page cover"><div class="page-content"><h1>Album dei Ricordi</h1></div></div>
+
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+      <div class="page"><div class="page-content"><img src="https://i.imgur.com/0mQ7OfU.jpg"></div></div>
+      <div class="page"><div class="page-content"><img src="https://i.imgur.com/5m0nK1V.jpg"></div></div>
+
+      <div class="page"><div class="page-content"><img src="https://i.imgur.com/JmO7n1f.jpg"></div></div>
+      <div class="page"><div class="page-content"><img src="https://i.imgur.com/xJUZw7T.jpg"></div></div>
+      <div class="page"><div class="page-content"><img src="https://i.imgur.com/0mQ7OfU.jpg"></div></div>
+      <div class="page"><div class="page-content"><img src="https://i.imgur.com/5m0nK1V.jpg"></div></div>
+
+      <div class="page cover"><div class="page-content"><h1>Fine 🌙</h1></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+$("#open-album").click(function(){
+  $("#start-screen").fadeOut(700);
+  setTimeout(()=>{
+    $(".scene, .controls").css({opacity:1, pointerEvents:"auto"});
+    $(".scene").addClass("animate-book");
+    $(".back-glow").addClass("active");
+    $(".magic-smoke").css("animation","smokeFade 2.2s ease-out forwards");
+    setTimeout(()=>{$(".page.cover .page-content").css("animation","coverOpen 1s ease-out forwards");},1500);
+  },700);
+});
+
+window.addEventListener("load", function(){
+  setTimeout(()=>{
+    const $album = $("#album");
+    const W = $(".wrapper").outerWidth();
+    const H = $(".wrapper").outerHeight();
+
+    $album.turn({
+      width:W,
+      height:H,
+      autoCenter:true,
+      duration:4200,
+      elevation:60,
+      gradients:true
+    });
+
+    setTimeout(()=>{ $album.turn("size", W, H); },100);
+    $("#next").click(()=> $album.turn("next"));
+    $("#prev").click(()=> $album.turn("previous"));
+
+    // Effetto sollevamento pagina
+    $album.bind("turning", function(event, page){
+      $(".page").removeClass("is-turning");
+      $(".page:eq("+(page-1)+")").addClass("is-turning");
+    });
+    $album.bind("turned", function(){
+      $(".page").removeClass("is-turning");
+    });
+  },250);
+});
+</script>
+
+</body>
+</html>
