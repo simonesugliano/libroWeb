@@ -15,21 +15,28 @@
 =================================================== */
 html, body {
   margin: 0;
-  padding: 0px;
+  padding: 0;
+  
+  /* Manteniamo l'area piena come prima */
   width: 100vw;
   height: 100svh;
   min-height: 100svh;
-  overflow: hidden;
 
-  /* sfondo con immagine + velatura trasparente */
-  background: 
+  /* NON fixed → il browser non crea layer strani */
+  position: relative;
+
+  /* Chiudiamo lo scroll, ma SENZA rompere i figli 3D */
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+  /* Sfondo identico */
+  background:
     url("assets/lanterna.jpg") no-repeat center center fixed;
   background-size: cover;
 
   font-family: "Georgia", serif;
-  position: fixed;
-  inset: 0;
 }
+
 /* Bagliore dinamico caldo (respiro della lanterna) */
 html::after {
   content: "";
