@@ -31,7 +31,7 @@ html, body {
 
   /* Sfondo identico */
   background:
-    url("assets/lanterna.jpg") no-repeat center center fixed;
+    url("/assets/lanterna.jpg") no-repeat center center fixed;
   background-size: cover;
 
   font-family: "Georgia", serif;
@@ -208,7 +208,7 @@ html::after,
   transform:translate(-50%, -50%);
   width:160%;
   height:160%;
-  background:url("https://i.imgur.com/4ZQZy5V.png");
+  background:url("/assets/lanterna.jpg");
   background-size:cover;
   opacity:0;
   pointer-events:none;
@@ -250,7 +250,6 @@ html::after,
 
 #album .page {
   background-color:#d8bf93 !important;
-  background-image:url('https://i.imgur.com/vd6JcMu.jpg');
   background-size:cover;
   background-position:center;
   border-radius:1vw;
@@ -768,13 +767,13 @@ html::after,
 
   </div>
 </div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/0mQ7OfU.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/5m0nK1V.jpg"></div></div>
+      <div class="page"><div class="page-content"><img src="/assets/1.png"></div></div>
+      <div class="page"><div class="page-content"><img src="/assets/1.png"></div></div>
 
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/JmO7n1f.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/xJUZw7T.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/0mQ7OfU.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/5m0nK1V.jpg"></div></div>
+      <div class="page"><div class="page-content"><img src="/assets/1.png"></div></div>
+      <div class="page"><div class="page-content"><img src="/assets/1.png"></div></div>
+      <div class="page"><div class="page-content"><img src="/assets/1.png"></div></div>
+      <div class="page"><div class="page-content"><img src="/assets/1.png"></div></div>
 
       <div class="page cover"><div class="page-content"><h1>Fine 🌙</h1></div></div>
     </div>
@@ -805,9 +804,14 @@ window.addEventListener("load", function(){
   autoCenter:true,
   duration:4200,
   elevation:60,
-  gradients:true,        // 🔥 riattiva rendering corretto
-  acceleration:false    // 🔥 disattiva GPU che ti causa il nero
+  gradients:true,        //  riattiva rendering corretto
+  acceleration:true    
 });
+
+$album.bind("missing", function(e, pages){
+  console.warn("Pagina mancante:", pages);
+});
+
 $album.bind("turning", function () {
   $("#album .turn-page").each(function () {
     this.style.backgroundColor = "#d8bf93";
