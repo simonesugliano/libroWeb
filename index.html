@@ -257,10 +257,6 @@ html::after,
   box-shadow:
     inset 0 0 25px rgba(0,0,0,0.2),
     inset 10px 0 20px rgba(0,0,0,0.1);
-
-  /* ✅ FIX PAGINE NERE */
-  transform-style: flat !important;
-  backface-visibility: visible !important;
 }
 #album .turn-page {
   background-color:#d8bf93 !important;
@@ -683,8 +679,8 @@ html::after,
 /* 🔥 FIX DEFINITIVO BUG TURN.JS + GPU */
 .scene,
 .wrapper,
-#album,
-#album * {
+#album
+{
   filter: none !important;
 }
 
@@ -807,6 +803,14 @@ window.addEventListener("load", function(){
   elevation:60,
   gradients:true,        // 🔥 riattiva rendering corretto
   acceleration:false    // 🔥 disattiva GPU che ti causa il nero
+});
+$album.bind("turning", function () {
+  $("#album .turn-page").each(function () {
+    this.style.backgroundColor = "#d8bf93";
+    this.style.backgroundImage = "url('https://i.imgur.com/vd6JcMu.jpg')";
+    this.style.backgroundSize = "cover";
+    this.style.backgroundPosition = "center";
+  });
 });
 
 
