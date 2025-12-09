@@ -665,6 +665,13 @@ html::after {
     max-height: 70vh;
   }
 }
+/* 🔥 FIX DEFINITIVO BUG TURN.JS + GPU */
+.scene,
+.wrapper,
+#album,
+#album * {
+  filter: none !important;
+}
 
 </style>
 </head>
@@ -783,7 +790,7 @@ window.addEventListener("load", function(){
       autoCenter:true,
       duration:4200,
       elevation:60,
-      gradients:true
+      gradients:false
     });
 
     setTimeout(()=>{ $album.turn("size", W, H); },100);
