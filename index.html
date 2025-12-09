@@ -61,13 +61,20 @@ html::after {
   50% { opacity: 0.75; transform: scale(1.04); }
   100% { opacity: 0.5; transform: scale(1.02); }
 }
+body {
+  isolation: isolate;
+}
 
 /* Evita glitch su Safari iOS */
 /* body {
   transform:translateZ(0);
   backface-visibility:hidden;
 } */
-
+html::after,
+.magic-smoke {
+  mix-blend-mode: normal !important;
+  filter: none !important;
+}
 /* ================================================ */
 #start-screen {
   position:absolute;
@@ -227,6 +234,8 @@ html::after {
   z-index:10;
   will-change:transform;
   overflow:visible !important;
+  transform: rotateX(40deg);
+  transform-style: preserve-3d;
 }
 
 
@@ -252,7 +261,11 @@ html::after {
   transform-style:preserve-3d;
   backface-visibility:hidden;
 }
-
+#album .turn-page,
+#album .page {
+  background-color: #d8bf93 !important;
+  backface-visibility: visible !important;
+}
 /* COPERTINA */
 .cover {
   background-image:url("assets/copertina.png") !important;
