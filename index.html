@@ -248,13 +248,12 @@ html::after,
   overflow:visible !important;
 }
 
-#album .page {
-    background-image:url("/assets/biblio.jpg") !important;
-      background-color:#d8bf93 !important;
-
-  background-size:cover;
-  background-position:center;
-  border-radius:1vw;
+#album .page:not(.cover) {
+  background-image: url("/assets/texture.webp") !important;
+  background-color: #d8bf93 !important;
+  background-size: cover;
+  background-position: center;
+  border-radius: 1vw;
   box-shadow:
     inset 0 0 25px rgba(0,0,0,0.2),
     inset 10px 0 20px rgba(0,0,0,0.1);
@@ -262,6 +261,7 @@ html::after,
   transform-style: preserve-3d !important; 
   backface-visibility: hidden !important;
 }
+
 
 #album .turn-page {
   background-color:#d8bf93 !important;
