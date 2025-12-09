@@ -249,7 +249,9 @@ html::after,
 }
 
 #album .page {
-  background-color:#d8bf93 !important;
+    background-image:url("/assets/biblio.jpg") !important;
+      background-color:#d8bf93 !important;
+
   background-size:cover;
   background-position:center;
   border-radius:1vw;
@@ -257,7 +259,7 @@ html::after,
     inset 0 0 25px rgba(0,0,0,0.2),
     inset 10px 0 20px rgba(0,0,0,0.1);
 
-  transform-style: preserve-3d !important;  /* ✅ DEVE ESSERE QUESTO */
+  transform-style: preserve-3d !important; 
   backface-visibility: hidden !important;
 }
 
@@ -269,7 +271,7 @@ html::after,
 
 /* COPERTINA */
 .cover {
-  background-image:url("assets/copertina.png") !important;
+  background-image:url("/assets/copertina.png") !important;
   background-size:cover !important;
   background-position:center !important;
   background-color:transparent !important;
@@ -736,7 +738,7 @@ html::after,
 
     <div class="story-wrapper">
 
-      <img class="story-photo" src="assets/biblio.jpg">
+      <img class="story-photo" src="/assets/biblio.jpg">
 
       <h2 class="story-title">Titolo del Ricordo</h2>
 
@@ -754,7 +756,7 @@ html::after,
 
     <div class="story-wrapper">
 
-      <img class="story-photo" src="assets/biblio.jpg">
+      <img class="story-photo" src="/assets/biblio.jpg">
 
       <h2 class="story-title">Titolo del Ricordo</h2>
 
@@ -781,77 +783,105 @@ html::after,
 </div>
 
 <script>
+// =========================
+// APERTURA ALBUM
+// =========================
 $("#open-album").click(function(){
   $("#start-screen").fadeOut(700);
+
   setTimeout(()=>{
     $(".scene, .controls").css({opacity:1, pointerEvents:"auto"});
     $(".scene").addClass("animate-book");
     $(".back-glow").addClass("active");
     $(".magic-smoke").css("animation","smokeFade 2.2s ease-out forwards");
-    setTimeout(()=>{$(".page.cover .page-content").css("animation","coverOpen 1s ease-out forwards");},1500);
+
+    setTimeout(()=>{
+      $(".page.cover .page-content").css("animation","coverOpen 1s ease-out forwards");
+    },1500);
   },700);
 });
 
-window.addEventListener("load", function(){
-  setTimeout(()=>{
-    const $album = $("#album");
-    const W = $(".wrapper").outerWidth();
-    const H = $(".wrapper").outerHeight();
+// ===================================================
+// FIX: INIZIALIZZAZIONE TURN.JS SICURA (anche su Vercel)
+// ===================================================
+function initTurnSafe() {
 
-    $album.turn({
-  width:W,
-  height:H,
-  autoCenter:true,
-  duration:4200,
-  elevation:60,
-  gradients:true,        //  riattiva rendering corretto
-  acceleration:true    
-});
+  const W = $(".wrapper").outerWidth();
+  const H = $(".wrapper").outerHeight();
 
-$album.bind("missing", function(e, pages){
-  console.warn("Pagina mancante:", pages);
-});
+  // SE wrapper è ancora 0 → aspettiamo
+  if (W < 50 || H < 50) {
+    requestAnimationFrame(initTurnSafe);
+    return;
+  }
 
-$album.bind("turning", function () {
-  $("#album .turn-page").each(function () {
-    this.style.backgroundColor = "#d8bf93";
-    this.style.backgroundImage = "url('https://i.imgur.com/vd6JcMu.jpg')";
-    this.style.backgroundSize = "cover";
-    this.style.backgroundPosition = "center";
+  const $album = $("#album");
+
+  // -------------------------------
+  // Inizializzazione Turn.js
+  // -------------------------------
+  $album.turn({
+    width: W,
+    height: H,
+    autoCenter: true,
+    duration: 4200,
+    elevation: 60,
+    gradients: true,
+    acceleration: true
   });
-});
+
+  // -------------------------------
+  // Debug pagine mancanti
+  // -------------------------------
+  $album.bind("missing", function(e, pages){
+    console.warn("Pagina mancante:", pages);
+  });
+
+  // -------------------------------
+  // Texture di fallback (locale)
+  // -------------------------------
+  $album.bind("turning", function () {
+    $("#album .turn-page").each(function () {
+      this.style.backgroundColor = "#d8bf93";
+      this.style.backgroundImage = "url('/img/texture-page.jpg')";
+      this.style.backgroundSize = "cover";
+      this.style.backgroundPosition = "center";
+    });
+  });
+
+  // -------------------------------
+  // Ricalibrazione dimensioni
+  // -------------------------------
+  setTimeout(()=>{ 
+    $album.turn("size", W, H);
+  }, 100);
+
+  // -------------------------------
+  // Controlli NEXT / PREV
+  // -------------------------------
+  $("#next").click(()=> $album.turn("next"));
+  $("#prev").click(()=> $album.turn("previous"));
+
+  // -------------------------------
+  // Effetto book-pages ON/OFF finale
+  // -------------------------------
+  $album.bind("turning", function(event, page){
+    const total = $album.turn("pages");
+    if (page === total) $(".book-pages").css("display", "none");
+  });
+
+  $album.bind("turned", function(event, page){
+    const total = $album.turn("pages");
+    if (page !== total) $(".book-pages").css("display", "block");
+  });
+}
+
+window.addEventListener("load", initTurnSafe);
 
 
-    setTimeout(()=>{ $album.turn("size", W, H); },100);
-    $("#next").click(()=> $album.turn("next"));
-    $("#prev").click(()=> $album.turn("previous"));
-
-    // Effetto sollevamento pagina
-    $album.bind("turning", function(event, page){
-  const total = $album.turn("pages");
-
-  // se sto andando verso la copertina finale → sparisce SUBITO
-  if (page === total) {
-    $(".book-pages").css("display", "none");
-  }
-});
-
-
-    $album.bind("turned", function(event, page){
-  const total = $album.turn("pages");
-
-  // se NON sono sulla copertina finale → riappare DOPO l'animazione
-  if (page !== total) {
-    $(".book-pages").css("display", "block");
-  }
-});
-
-
-
-  },250);
-});
-
-// password
+// =========================
+// SISTEMA PASSWORD
+// =========================
 const PASSWORD = "lanterna";
 
 document.getElementById("unlock-btn").onclick = function () {
@@ -862,36 +892,32 @@ document.getElementById("unlock-btn").onclick = function () {
     const lock = document.getElementById("lock-screen");
     const fx   = document.getElementById("reveal-fx");
 
-    // 1) appare la LUCE sopra tutto
+    // LUCE che appare
     fx.classList.add("active");
 
-    // 2) la schermata password sfuma via
+    // Fade-out lockscreen
     setTimeout(() => {
       lock.style.transition = "opacity 2.2s ease-out";
       lock.style.opacity = "0";
       lock.style.pointerEvents = "none";
     }, 1500);
 
-    // 3) dopo il fade-out la tolgo proprio dal DOM
+    // Rimozione dal DOM
     setTimeout(() => {
       lock.style.display = "none";
     }, 2500);
 
-    // 4) la luce resta un attimo piena, poi comincia a svanire
+    // Dissolvenza luce
     setTimeout(() => {
       fx.classList.add("fade-out");
     }, 2000);
 
-    // 5) alla fine la luce sparisce del tutto
     setTimeout(() => {
       fx.style.display = "none";
     }, 4800);
 
-    // NOTA: qui NON tocchiamo .scene
-    // Il libro si aprirà solo quando clicco "Vedi i Ricordi"
-
   } else {
-    // errore password
+
     const wrong = document.getElementById("wrong-pass");
     wrong.style.opacity = "1";
 
@@ -900,9 +926,6 @@ document.getElementById("unlock-btn").onclick = function () {
     }, 2000);
   }
 };
-
-
-
 </script>
 
 </body>
