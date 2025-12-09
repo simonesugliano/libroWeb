@@ -63,10 +63,10 @@ html::after {
 }
 
 /* Evita glitch su Safari iOS */
-body {
+/* body {
   transform:translateZ(0);
   backface-visibility:hidden;
-}
+} */
 
 /* ================================================ */
 #start-screen {
@@ -161,14 +161,20 @@ body {
   position:absolute;
   top:50%;
   left:50%;
-transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
+  transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
   transform-style:preserve-3d;
   perspective:2400px;
-  filter:drop-shadow(0 35px 60px rgba(0,0,0,0.6));
   z-index:2000;
   will-change:transform;
-  filter: drop-shadow(0 80px 120px rgba(0,0,0,0.7));
 }
+.scene-shadow {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 80px 120px rgba(0,0,0,0.7));
+  pointer-events: none;
+  z-index: -2;
+}
+
 
 /* LUCE DIETRO */
 .back-glow {
@@ -235,7 +241,7 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 }
 
 #album .page {
-  background-color:#f7e9d0;
+  background-color:#d8bf93 !important;
   background-image:url('https://i.imgur.com/vd6JcMu.jpg');
   background-size:cover;
   background-position:center;
@@ -684,6 +690,7 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 </div>
 
 <div class="scene">
+  <div class="scene-shadow"></div>
   <div class="back-glow"></div>
   <div class="magic-smoke"></div>
 
