@@ -234,8 +234,7 @@ html::after,
   z-index:10;
   will-change:transform;
   overflow:visible !important;
-  transform: rotateX(40deg);
-  transform-style: preserve-3d;
+  
 }
 
 
@@ -258,14 +257,17 @@ html::after,
   box-shadow:
     inset 0 0 25px rgba(0,0,0,0.2),
     inset 10px 0 20px rgba(0,0,0,0.1);
-  transform-style:preserve-3d;
-  backface-visibility:hidden;
-}
-#album .turn-page,
-#album .page {
-  background-color: #d8bf93 !important;
+
+  /* ✅ FIX PAGINE NERE */
+  transform-style: flat !important;
   backface-visibility: visible !important;
 }
+#album .turn-page {
+  background-color:#d8bf93 !important;
+  backface-visibility: visible !important;
+}
+
+
 /* COPERTINA */
 .cover {
   background-image:url("assets/copertina.png") !important;
@@ -798,13 +800,15 @@ window.addEventListener("load", function(){
     const H = $(".wrapper").outerHeight();
 
     $album.turn({
-      width:W,
-      height:H,
-      autoCenter:true,
-      duration:4200,
-      elevation:60,
-      gradients:false
-    });
+  width:W,
+  height:H,
+  autoCenter:true,
+  duration:4200,
+  elevation:60,
+  gradients:true,        // 🔥 riattiva rendering corretto
+  acceleration:false    // 🔥 disattiva GPU che ti causa il nero
+});
+
 
     setTimeout(()=>{ $album.turn("size", W, H); },100);
     $("#next").click(()=> $album.turn("next"));
