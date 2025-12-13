@@ -31,7 +31,7 @@ html, body {
 
   /* Sfondo identico */
   background:
-    url("assets/lanterna.jpg") no-repeat center center fixed;
+    url("/assets/lanterna.jpg") no-repeat center center fixed;
   background-size: cover;
 
   font-family: "Georgia", serif;
@@ -61,13 +61,20 @@ html::after {
   50% { opacity: 0.75; transform: scale(1.04); }
   100% { opacity: 0.5; transform: scale(1.02); }
 }
-
-/* Evita glitch su Safari iOS */
 body {
-  transform:translateZ(0);
-  backface-visibility:hidden;
+  isolation: isolate;
 }
 
+/* Evita glitch su Safari iOS */
+/* body {
+  transform:translateZ(0);
+  backface-visibility:hidden;
+} */
+html::after,
+.magic-smoke {
+  mix-blend-mode: normal !important;
+  filter: none !important;
+}
 /* ================================================ */
 #start-screen {
   position:absolute;
@@ -161,14 +168,20 @@ body {
   position:absolute;
   top:50%;
   left:50%;
-transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
+  transform:translate(-50%, -50%)!important;
   transform-style:preserve-3d;
   perspective:2400px;
-  filter:drop-shadow(0 35px 60px rgba(0,0,0,0.6));
   z-index:2000;
   will-change:transform;
-  filter: drop-shadow(0 80px 120px rgba(0,0,0,0.7));
 }
+.scene-shadow {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 80px 120px rgba(0,0,0,0.7));
+  pointer-events: none;
+  z-index: -2;
+}
+
 
 /* LUCE DIETRO */
 .back-glow {
@@ -195,7 +208,7 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
   transform:translate(-50%, -50%);
   width:160%;
   height:160%;
-  background:url("https://i.imgur.com/4ZQZy5V.png");
+  background:url("/assets/fumo.webp");
   background-size:cover;
   opacity:0;
   pointer-events:none;
@@ -221,6 +234,7 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
   z-index:10;
   will-change:transform;
   overflow:visible !important;
+  
 }
 
 
@@ -234,22 +248,30 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
   overflow:visible !important;
 }
 
-#album .page {
-  background-color:#f7e9d0;
-  background-image:url('https://i.imgur.com/vd6JcMu.jpg');
-  background-size:cover;
-  background-position:center;
-  border-radius:1vw;
+#album .page:not(.cover) {
+  background-image: url("//assets/carta.webp") !important;
+  background-color: #d8bf93 !important;
+  background-size: cover;
+  background-position: center;
+  border-radius: 1vw;
   box-shadow:
     inset 0 0 25px rgba(0,0,0,0.2),
     inset 10px 0 20px rgba(0,0,0,0.1);
-  transform-style:preserve-3d;
-  backface-visibility:hidden;
+
+  transform-style: preserve-3d !important; 
+  backface-visibility: hidden !important;
 }
+
+
+#album .turn-page {
+  background-color:#d8bf93 !important;
+  backface-visibility: visible !important;
+}
+
 
 /* COPERTINA */
 .cover {
-  background-image:url("assets/copertina.png") !important;
+  background-image:url("/assets/copertina.png") !important;
   background-size:cover !important;
   background-position:center !important;
   background-color:transparent !important;
@@ -342,7 +364,7 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 
   filter: blur(8px);
   opacity: 0.9;
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
   z-index: -1;
 }
 
@@ -659,6 +681,13 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
     max-height: 70vh;
   }
 }
+/* 🔥 FIX DEFINITIVO BUG TURN.JS + GPU */
+.scene,
+.wrapper,
+#album
+{
+  filter: none !important;
+}
 
 </style>
 </head>
@@ -684,6 +713,7 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 </div>
 
 <div class="scene">
+  <div class="scene-shadow"></div>
   <div class="back-glow"></div>
   <div class="magic-smoke"></div>
 
@@ -701,14 +731,14 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 <div class="book-pages"></div>
 
     <div id="album">
-      <div class="page cover"><div class="page-content"><h1>Album dei Ricordi</h1></div></div>
-
+      <div class="page cover"><div class="page-content"></div></div> <!--<h1>Album dei Ricordi</h1>-->
+<!--pagina 1-->
 <div class="page">
   <div class="page-content">
 
     <div class="story-wrapper">
 
-      <img class="story-photo" src="assets/biblio.jpg">
+      <img class="story-photo" src="/assets/biblio.jpg">
 
       <h2 class="story-title">Titolo del Ricordo</h2>
 
@@ -721,12 +751,13 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 
   </div>
 </div>
+<!--pagina 2-->
 <div class="page">
   <div class="page-content">
 
     <div class="story-wrapper">
 
-      <img class="story-photo" src="assets/biblio.jpg">
+      <img class="story-photo" src="/assets/biblio.jpg">
 
       <h2 class="story-title">Titolo del Ricordo</h2>
 
@@ -739,76 +770,231 @@ transform:translate(-50%, -50%) rotateX(40deg) rotateZ(0deg) !important;
 
   </div>
 </div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/0mQ7OfU.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/5m0nK1V.jpg"></div></div>
+<!--pagina 3-->
+<div class="page">
+  <div class="page-content">
 
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/JmO7n1f.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/xJUZw7T.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/0mQ7OfU.jpg"></div></div>
-      <div class="page"><div class="page-content"><img src="https://i.imgur.com/5m0nK1V.jpg"></div></div>
+    <div class="story-wrapper">
 
-      <div class="page cover"><div class="page-content"><h1>Fine 🌙</h1></div></div>
+      <img class="story-photo" src="/assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+      <!--pagina 4-->
+
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="/assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+<!--pagina 5-->
+
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="/assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+<!--pagina 6-->
+
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="/assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+      <!--pagina 7-->
+
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="/assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+      <!--pagina 8-->
+
+<div class="page">
+  <div class="page-content">
+
+    <div class="story-wrapper">
+
+      <img class="story-photo" src="/assets/biblio.jpg">
+
+      <h2 class="story-title">Titolo del Ricordo</h2>
+
+      <p class="story-text">
+        Questo è un testo descrittivo collegato alla foto. Può essere
+        un ricordo, una data, una nota, oppure un messaggio dedicato.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+
+      <div class="page cover"><div class="page-content"></div></div> <!--<h1>Fine </h1>-->
     </div>
   </div>
 </div>
 
 <script>
+// =========================
+// APERTURA ALBUM
+// =========================
 $("#open-album").click(function(){
   $("#start-screen").fadeOut(700);
+
   setTimeout(()=>{
     $(".scene, .controls").css({opacity:1, pointerEvents:"auto"});
     $(".scene").addClass("animate-book");
     $(".back-glow").addClass("active");
     $(".magic-smoke").css("animation","smokeFade 2.2s ease-out forwards");
-    setTimeout(()=>{$(".page.cover .page-content").css("animation","coverOpen 1s ease-out forwards");},1500);
+
+    setTimeout(()=>{
+      $(".page.cover .page-content").css("animation","coverOpen 1s ease-out forwards");
+    },1500);
   },700);
 });
 
-window.addEventListener("load", function(){
-  setTimeout(()=>{
-    const $album = $("#album");
-    const W = $(".wrapper").outerWidth();
-    const H = $(".wrapper").outerHeight();
+// ===================================================
+// FIX: INIZIALIZZAZIONE TURN.JS SICURA (anche su Vercel)
+// ===================================================
+function initTurnSafe() {
 
-    $album.turn({
-      width:W,
-      height:H,
-      autoCenter:true,
-      duration:4200,
-      elevation:60,
-      gradients:true
+  const W = $(".wrapper").outerWidth();
+  const H = $(".wrapper").outerHeight();
+
+  // SE wrapper è ancora 0 → aspettiamo
+  if (W < 50 || H < 50) {
+    requestAnimationFrame(initTurnSafe);
+    return;
+  }
+
+  const $album = $("#album");
+
+  // -------------------------------
+  // Inizializzazione Turn.js
+  // -------------------------------
+  $album.turn({
+    width: W,
+    height: H,
+    autoCenter: true,
+    duration: 4200,
+    elevation: 60,
+    gradients: true,
+    acceleration: true
+  });
+
+  // -------------------------------
+  // Debug pagine mancanti
+  // -------------------------------
+  $album.bind("missing", function(e, pages){
+    console.warn("Pagina mancante:", pages);
+  });
+
+  // -------------------------------
+  // Texture di fallback (locale)
+  // -------------------------------
+  $album.bind("turning", function () {
+    $("#album .turn-page").each(function () {
+      this.style.backgroundColor = "#d8bf93";
+      this.style.backgroundImage = "url('/img/texture-page.jpg')";
+      this.style.backgroundSize = "cover";
+      this.style.backgroundPosition = "center";
     });
+  });
 
-    setTimeout(()=>{ $album.turn("size", W, H); },100);
-    $("#next").click(()=> $album.turn("next"));
-    $("#prev").click(()=> $album.turn("previous"));
+  // -------------------------------
+  // Ricalibrazione dimensioni
+  // -------------------------------
+  setTimeout(()=>{ 
+    $album.turn("size", W, H);
+  }, 100);
 
-    // Effetto sollevamento pagina
-    $album.bind("turning", function(event, page){
-  const total = $album.turn("pages");
+  // -------------------------------
+  // Controlli NEXT / PREV
+  // -------------------------------
+  $("#next").click(()=> $album.turn("next"));
+  $("#prev").click(()=> $album.turn("previous"));
 
-  // se sto andando verso la copertina finale → sparisce SUBITO
-  if (page === total) {
-    $(".book-pages").css("display", "none");
-  }
-});
+  // -------------------------------
+  // Effetto book-pages ON/OFF finale
+  // -------------------------------
+  $album.bind("turning", function(event, page){
+    const total = $album.turn("pages");
+    if (page === total) $(".book-pages").css("display", "none");
+  });
+
+  $album.bind("turned", function(event, page){
+    const total = $album.turn("pages");
+    if (page !== total) $(".book-pages").css("display", "block");
+  });
+}
+
+window.addEventListener("load", initTurnSafe);
 
 
-    $album.bind("turned", function(event, page){
-  const total = $album.turn("pages");
-
-  // se NON sono sulla copertina finale → riappare DOPO l'animazione
-  if (page !== total) {
-    $(".book-pages").css("display", "block");
-  }
-});
-
-
-
-  },250);
-});
-
-// password
+// =========================
+// SISTEMA PASSWORD
+// =========================
 const PASSWORD = "lanterna";
 
 document.getElementById("unlock-btn").onclick = function () {
@@ -819,36 +1005,32 @@ document.getElementById("unlock-btn").onclick = function () {
     const lock = document.getElementById("lock-screen");
     const fx   = document.getElementById("reveal-fx");
 
-    // 1) appare la LUCE sopra tutto
+    // LUCE che appare
     fx.classList.add("active");
 
-    // 2) la schermata password sfuma via
+    // Fade-out lockscreen
     setTimeout(() => {
       lock.style.transition = "opacity 2.2s ease-out";
       lock.style.opacity = "0";
       lock.style.pointerEvents = "none";
     }, 1500);
 
-    // 3) dopo il fade-out la tolgo proprio dal DOM
+    // Rimozione dal DOM
     setTimeout(() => {
       lock.style.display = "none";
     }, 2500);
 
-    // 4) la luce resta un attimo piena, poi comincia a svanire
+    // Dissolvenza luce
     setTimeout(() => {
       fx.classList.add("fade-out");
     }, 2000);
 
-    // 5) alla fine la luce sparisce del tutto
     setTimeout(() => {
       fx.style.display = "none";
     }, 4800);
 
-    // NOTA: qui NON tocchiamo .scene
-    // Il libro si aprirà solo quando clicco "Vedi i Ricordi"
-
   } else {
-    // errore password
+
     const wrong = document.getElementById("wrong-pass");
     wrong.style.opacity = "1";
 
@@ -857,9 +1039,6 @@ document.getElementById("unlock-btn").onclick = function () {
     }, 2000);
   }
 };
-
-
-
 </script>
 
 </body>

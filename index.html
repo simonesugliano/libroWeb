@@ -31,7 +31,7 @@ html, body {
 
   /* Sfondo identico */
   background:
-    url("/assets/lanterna.jpg") no-repeat center center fixed;
+    url("/assets/lant1.png") no-repeat center center fixed;
   background-size: cover;
 
   font-family: "Georgia", serif;
@@ -688,7 +688,37 @@ html::after,
 {
   filter: none !important;
 }
+/* ===== PAGINA FOTO FULL ===== */
+.photo-page .page-content{
+  padding: 0 !important;
+  width: 100%;
+  height: 100%;
+}
 
+.photo-page .full-photo{
+  width: 95%;
+  height: 95%;
+  object-fit: cover;
+  display: block;
+  border-radius: 1vw;
+}
+.photo-page .full-photoCont{
+  width: 95%;
+  height: 95%;
+  object-fit: contain;
+  display: block;
+  border-radius: 1vw;
+}
+.photo-page .mid-photo{
+    width: 60%;
+  height: 60%;
+  object-fit: cover;
+  display: block;
+  border-radius: 1vw;
+  transform: rotate(-20deg);
+  transform-origin: center center;
+  box-shadow: 0 18px 35px rgba(0,0,0,0.45);
+}
 </style>
 </head>
 <body>
@@ -731,167 +761,283 @@ html::after,
 <div class="book-pages"></div>
 
     <div id="album">
-      <div class="page cover"><div class="page-content"></div></div> <!--<h1>Album dei Ricordi</h1>-->
-<!--pagina 1-->
-<div class="page">
-  <div class="page-content">
+  <div class="page cover"><div class="page-content"></div></div>
 
-    <div class="story-wrapper">
-
-      <img class="story-photo" src="/assets/biblio.jpg">
-
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
-      </p>
-
+  <!-- inizio -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/tinder.png" alt="">
     </div>
-
   </div>
-</div>
-<!--pagina 2-->
-<div class="page">
-  <div class="page-content">
 
-    <div class="story-wrapper">
-
-      <img class="story-photo" src="/assets/biblio.jpg">
-
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+        “È successo per caso”
       </p>
-
     </div>
-
   </div>
-</div>
-<!--pagina 3-->
-<div class="page">
-  <div class="page-content">
 
-    <div class="story-wrapper">
+  <!-- non stavamo cercando niente -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/1.jpg" alt="">
+    </div>
+  </div>
 
-      <img class="story-photo" src="/assets/biblio.jpg">
-
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+        “Non stavamo cercando niente. <br>
+E invece..”
       </p>
-
     </div>
-
   </div>
-</div>
-      <!--pagina 4-->
 
-<div class="page">
-  <div class="page-content">
+<div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/2.jpg" alt="">
+    </div>
+  </div>
 
-    <div class="story-wrapper">
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/3.jpg" alt="">
+    </div>
+  </div>
+  
 
-      <img class="story-photo" src="/assets/biblio.jpg">
-
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+  <!-- ridevamo per niente -->
+   <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+        “Ridevamo per niente <br>
+ed era così bello..”
       </p>
-
     </div>
-
   </div>
-</div>
-<!--pagina 5-->
 
-<div class="page">
-  <div class="page-content">
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/6.jpg" alt="">
+    </div>
+  </div>
 
-    <div class="story-wrapper">
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/5.jpg" alt="">
+    </div>
+  </div>
+  
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/7.jpg" alt="">
+    </div>
+  </div>
 
-      <img class="story-photo" src="/assets/biblio.jpg">
+<!-- il mio trasferimento -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/io.jpg" alt="">
+    </div>
+  </div>
 
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+        “Io ho iniziato a muovermi. <br>
+Non sapevo ancora verso cosa..”
       </p>
-
     </div>
-
   </div>
-</div>
-<!--pagina 6-->
 
-<div class="page">
-  <div class="page-content">
+  <!-- trasferimento suo a fossano -->
 
-    <div class="story-wrapper">
-
-      <img class="story-photo" src="/assets/biblio.jpg">
-
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+        “È qui che sei entrata <br>
+        davvero nella mia vita.”
       </p>
-
     </div>
-
   </div>
-</div>
-      <!--pagina 7-->
 
-<div class="page">
-  <div class="page-content">
+   <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/10.jpg" alt="">
+    </div>
+  </div>
 
-    <div class="story-wrapper">
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/9.jpg" alt="">
+    </div>
+  </div>
 
-      <img class="story-photo" src="/assets/biblio.jpg">
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/11.jpg" alt="">
+    </div>
+  </div>
 
-      <h2 class="story-title">Titolo del Ricordo</h2>
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/4.jpg" alt="">
+    </div>
+  </div>
 
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="w-full" src="/assets/12.jpg" alt="">
+    </div>
+  </div>
+
+
+   <!-- il sogno -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/sogno.jpg" alt="">
+    </div>
+  </div>
+
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+       “Volevamo tutto. <br>
+E lo volevamo insieme.”
       </p>
-
     </div>
-
   </div>
-</div>
-      <!--pagina 8-->
 
-<div class="page">
-  <div class="page-content">
+<div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/felicita.jpg" alt="">
+    </div>
+  </div>
 
-    <div class="story-wrapper">
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/spiaggia.jpg" alt="">
+    </div>
+  </div>
 
-      <img class="story-photo" src="/assets/biblio.jpg">
+   <!-- il problema -->
 
-      <h2 class="story-title">Titolo del Ricordo</h2>
-
-      <p class="story-text">
-        Questo è un testo descrittivo collegato alla foto. Può essere
-        un ricordo, una data, una nota, oppure un messaggio dedicato.
+    <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+      “La stessa montagna. <br>
+Due pesi diversi.”
       </p>
-
     </div>
-
   </div>
+
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/peso.jpg" alt="">
+    </div>
+  </div>
+
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/resiste.jpg" alt="">
+    </div>
+  </div>
+ 
+<div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/umore.jpg" alt="">
+    </div>
+  </div>
+  <!-- COPPIA 8 -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="mid-photo" src="/assets/rotto.jpg" alt="">
+    </div>
+  </div>
+
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+      “Ci siamo allontanati. <br>
+Ma non siamo spariti..”
+      </p>
+    </div>
+  </div>
+
+   <!-- il ritorno -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/storia (13).jpg" alt="">
+    </div>
+  </div>
+
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+      “Forse perché l’amore <br>
+non aspetta il momento giusto <br>
+per andare e venire..”
+      </p>
+    </div>
+  </div>
+  <!-- ULTIMA COPPIA -->
+  <div class="page photo-page">
+    <div class="page-content">
+      <img class="full-photo" src="/assets/fine.jpg" alt="">
+    </div>
+  </div>
+
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+    “Le prossime pagine <br>
+       sta a Noi scriverle..”
+      </p>
+    </div>
+  </div>
+ <!-- pagine vuote -->
+
+<div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+      ...
+      </p>
+    </div>
+  </div>
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+       ...
+      </p>
+    </div>
+  </div>
+  
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+      Questa storia,<br>
+nel bene e nel male,<br>
+l’abbiamo scritta noi..
+      </p>
+    </div>
+  </div>
+
+  <div class="page text-page">
+    <div class="page-content">
+      <p class="center-text">
+      Il resto,<br>
+se vorremo,<br>
+lo scriveremo ancora.<br>
+A quattro mani.<br>
+      </p>
+    </div>
+  </div>
+
+  
+  <div class="page cover"><div class="page-content"></div></div>
 </div>
 
-      <div class="page cover"><div class="page-content"></div></div> <!--<h1>Fine </h1>-->
-    </div>
   </div>
 </div>
 
@@ -1015,12 +1161,12 @@ document.getElementById("unlock-btn").onclick = function () {
       lock.style.pointerEvents = "none";
     }, 1500);
 
-    // Rimozione dal DOM
+    // Rimozione dalmmmmmmmmmm DOM
     setTimeout(() => {
       lock.style.display = "none";
     }, 2500);
 
-    // Dissolvenza luce
+    // Dissolvenza gsgsggsluce
     setTimeout(() => {
       fx.classList.add("fade-out");
     }, 2000);
